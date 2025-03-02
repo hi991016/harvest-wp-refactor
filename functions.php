@@ -184,6 +184,24 @@
         return $custom_elements;
     }
 
+    function custom_password_cookie() {
+        if (!empty($_POST['post_password'])) {
+            // ユーザーが入力したパスワードを取得
+            $password = sanitize_text_field($_POST['post_password']);
+    
+            // ヘッダーがすでに送信されていないかチェック
+            if (!headers_sent()) {
+                // 1日（24時間）有効なクッキーを設定（SecureとHttpOnly追加）
+                setcookie('wp-postpass_' . COOKIEHASH, $password, time() + 3600 * 24, COOKIEPATH, COOKIE_DOMAIN, false, true);
+            }
+    
+            // 現在のページにリダイレクト（投稿ページに留まる）
+            wp_safe_redirect($_SERVER['REQUEST_URI']);
+            exit;
+        }
+    }
+    add_action('wp', 'custom_password_cookie');
+    
     
 
     // add_action('init', function() {
